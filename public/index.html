@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HisabPro - Digital Khata & Udhar Ledger</title>
+
+  <!-- PWA & Apple Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="HisabPro">
+  <meta name="theme-color" content="#1E40AF">
+  <meta name="description" content="Simple business. Clear hisab. Digital Khata & Udhar Ledger.">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">₹</div>
+      <div>
+        <h1 class="brand-title">HisabPro</h1>
+        <div class="brand-subtitle" id="headerBusinessName">My Business Khata</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="offline-pill">
+        <span class="dot-green"></span>
+        <span>Offline Ready</span>
+      </div>
+      <button class="btn-icon" id="openSettingsBtn" title="Settings" aria-label="Settings">⚙️</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- View: Parties (Customers / Suppliers) -->
+    <section id="view-parties" class="app-view">
+      <!-- Overview Card -->
+      <div class="card overview-card">
+        <div class="overview-title">Net Khata Balance</div>
+        <div class="overview-amount" id="netKhataAmount">₹0</div>
+        <div class="overview-grid">
+          <div>
+            <div class="overview-sub-title">You'll Get (Udhar)</div>
+            <div class="overview-get" id="totalYouGet">₹0</div>
+          </div>
+          <div>
+            <div class="overview-sub-title">You'll Give (Payable)</div>
+            <div class="overview-give" id="totalYouGive">₹0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Chips -->
+      <div class="filter-bar">
+        <button class="filter-chip active" data-filter="customers">Customers (<span id="countCustomers">0</span>)</button>
+        <button class="filter-chip" data-filter="suppliers">Suppliers (<span id="countSuppliers">0</span>)</button>
+        <button class="filter-chip" data-filter="all">All</button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="partySearchInput" placeholder="Search customer or phone...">
+      </div>
+
+      <!-- Party List Container -->
+      <div id="partyListContainer"></div>
+
+      <!-- Floating Action Button -->
+      <button class="fab" id="openAddPartyModalBtn">+ Add Party</button>
+    </section>
+
+    <!-- View: Cashbook -->
+    <section id="view-cashbook" class="app-view" style="display: none;">
+      <div class="card overview-card">
+        <div class="overview-title">Cash in Hand Balance</div>
+        <div class="overview-amount" id="netCashAmount">₹0</div>
+        <div class="overview-grid">
+          <div>
+            <div class="overview-sub-title">Total Cash IN</div>
+            <div class="overview-get" id="totalCashIn">₹0</div>
+          </div>
+          <div>
+            <div class="overview-sub-title">Total Cash OUT</div>
+            <div class="overview-give" id="totalCashOut">₹0</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn btn-got" id="openCashInBtn" style="flex: 1;">+ Cash IN</button>
+        <button class="btn btn-gave" id="openCashOutBtn" style="flex: 1;">- Cash OUT</button>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-muted);">DAILY CASH LOG</h3>
+        <div id="cashbookListContainer"></div>
+      </div>
+    </section>
+
+    <!-- View: Expenses & Income -->
+    <section id="view-expenses" class="app-view" style="display: none;">
+      <div class="card overview-card">
+        <div class="overview-title">Business Profit / Margin</div>
+        <div class="overview-amount" id="netProfitAmount">₹0</div>
+        <div class="overview-grid">
+          <div>
+            <div class="overview-sub-title">Total Revenue</div>
+            <div class="overview-get" id="totalIncomeAmount">₹0</div>
+          </div>
+          <div>
+            <div class="overview-sub-title">Total Expenses</div>
+            <div class="overview-give" id="totalExpenseAmount">₹0</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn btn-primary" id="openAddExpenseBtn" style="flex: 1; background: var(--red);">- Add Expense</button>
+        <button class="btn btn-primary" id="openAddIncomeBtn" style="flex: 1; background: var(--green);">+ Add Income</button>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-muted);">EXPENSE & REVENUE LOG</h3>
+        <div id="expenseListContainer"></div>
+      </div>
+    </section>
+
+    <!-- View: Reminders -->
+    <section id="view-reminders" class="app-view" style="display: none;">
+      <div class="card">
+        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 4px;">Collection Reminders</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Direct WhatsApp messages and call reminders for pending dues.</p>
+        <div id="remindersListContainer"></div>
+      </div>
+    </section>
+
+    <!-- View: Reports -->
+    <section id="view-reports" class="app-view" style="display: none;">
+      <div class="card">
+        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 14px;">Business Financial Summary</h3>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span>Total Customers</span>
+          <strong id="repTotalCustomers">0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span>Total Outstanding Dues</span>
+          <strong class="txt-green" id="repTotalDues">₹0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+          <span>Total Payable to Suppliers</span>
+          <strong class="txt-red" id="repTotalPayables">₹0</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+          <span>Transactions Recorded</span>
+          <strong id="repTotalTxCount">0</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size: 14px; margin-bottom: 12px; color: var(--text-muted);">TOP OUTSTANDING CUSTOMERS</h3>
+        <div id="topDebtorsContainer"></div>
+      </div>
+    </section>
+
+    <!-- View: Settings -->
+    <section id="view-settings" class="app-view" style="display: none;">
+      <!-- Header Navigation inside Settings -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+        <button class="btn btn-secondary" id="backFromSettingsBtn" style="padding: 10px 16px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; min-height: 48px;">
+          <span>← Back to Khata</span>
+        </button>
+        <h2 style="font-size: 18px; font-weight: 800;">⚙️ App Settings</h2>
+      </div>
+
+      <!-- 1. Business Profile -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span>🏢</span> <span>Business Profile</span>
+        </h3>
+        <div class="form-group">
+          <label class="form-label">Business / Shop Name</label>
+          <input type="text" class="form-input" id="settingBusinessName" placeholder="e.g. Sharma Traders">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Subtitle / Tagline / Type</label>
+          <input type="text" class="form-input" id="settingBusinessSubtitle" placeholder="e.g. General Store & Wholesale">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contact Phone</label>
+          <input type="tel" class="form-input" id="settingBusinessPhone" placeholder="10-digit mobile number">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Address</label>
+          <input type="text" class="form-input" id="settingBusinessAddress" placeholder="Shop / Office address">
+        </div>
+        <div class="form-group">
+          <label class="form-label">UPI ID for Payment Requests</label>
+          <input type="text" class="form-input" id="settingUpiId" placeholder="e.g. yourname@okhdfcbank">
+        </div>
+        <button class="btn btn-primary" id="saveSettingsBtn" style="min-height: 48px; font-weight: 700;">Save Business Profile</button>
+      </div>
+
+      <!-- 2. App Preferences (Language & Dark Mode) -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span>🎨</span> <span>App Preferences</span>
+        </h3>
+        <div class="form-group">
+          <label class="form-label">Language / भाषा / ভাষা / ભાષા</label>
+          <select class="form-select" id="settingLanguageSelect" style="font-size: 15px; font-weight: 600; padding: 10px;">
+            <option value="en">English (Default)</option>
+            <option value="hi">हिन्दी (Hindi)</option>
+            <option value="bn">বাংলা (Bengali)</option>
+            <option value="gu">ગુજરાતી (Gujarati)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1px solid var(--border);">
+          <div>
+            <div style="font-weight: 700; font-size: 15px;">Dark Theme</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Switch between Light and Dark interface</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="settingThemeToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 3. Security: PIN Lock -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <span>🔒</span> <span>Security & Privacy</span>
+        </h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px;">
+          <div>
+            <div style="font-weight: 700; font-size: 15px;">4-Digit App PIN Lock</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Protect your business ledger from unauthorized viewing</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="settingPinToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="pinConfigBox" style="display: none; padding-top: 12px; border-top: 1px solid var(--border);">
+          <div class="form-group">
+            <label class="form-label">Set 4-Digit PIN</label>
+            <input type="password" class="form-input" id="settingPinInput" maxlength="4" inputmode="numeric" placeholder="Enter 4 digits (e.g. 1234)">
+          </div>
+          <button class="btn btn-secondary" id="savePinBtn" style="min-height: 48px; width: 100%; font-weight: 700;">Save PIN</button>
+        </div>
+      </div>
+
+      <!-- 4. Backup & Restore -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span>💾</span> <span>Backup & Restore</span>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Keep your data 100% safe. Download a full offline backup or restore a previously saved JSON backup.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn btn-secondary" id="exportDataBtn" style="min-height: 48px; font-weight: 600;">📥 Download Backup (JSON)</button>
+          <input type="file" id="restoreFileInput" accept=".json" style="display: none;">
+          <button class="btn btn-secondary" id="restoreDataBtn" style="min-height: 48px; font-weight: 600;">📤 Restore from Backup (JSON)</button>
+        </div>
+      </div>
+
+      <!-- 5. Export Reports -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span>📊</span> <span>Export Reports</span>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Generate detailed records for accounting or tax purposes.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button class="btn btn-secondary" id="exportCsvBtn" style="min-height: 48px; font-weight: 600;">📄 Export Full Ledger as CSV</button>
+          <button class="btn btn-secondary" id="exportPdfBtn" style="min-height: 48px; font-weight: 600;">🖨️ Print / Save as PDF Statement</button>
+        </div>
+      </div>
+
+      <!-- 6. Share HisabPro -->
+      <div class="card">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+          <span>💬</span> <span>Share App</span>
+        </h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">Recommend HisabPro to other business owners or storekeepers.</p>
+        <button class="btn btn-secondary" id="shareAppBtn" style="min-height: 48px; font-weight: 600; width: 100%;">📤 Share via WhatsApp / Share Sheet</button>
+      </div>
+
+      <!-- 7. PWA Installation -->
+      <div class="card" style="border-left: 4px solid var(--primary);">
+        <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">📲 Install HisabPro</h3>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Install HisabPro on iPhone or Android for full-screen standalone offline use.</p>
+        <button class="btn btn-primary" id="triggerPwaInstallBtn" style="min-height: 48px; font-weight: 700;">Install HisabPro App</button>
+      </div>
+
+      <!-- 8. Reset All Ledger Data -->
+      <div class="card" style="border: 1px solid var(--red-border); background: var(--red-bg);">
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--red); margin-bottom: 6px;">⚠️ Danger Zone</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Permanently clear all ledger records, transactions, and parties.</p>
+        <button class="btn btn-gave" id="resetAllDataBtn" style="min-height: 48px; font-weight: 700;">Clear / Reset All Data</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" data-nav="parties">
+      <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      <span>Parties</span>
+    </div>
+    <div class="nav-item" data-nav="cashbook">
+      <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+      <span>Cashbook</span>
+    </div>
+    <div class="nav-item" data-nav="expenses">
+      <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+      <span>Expenses</span>
+    </div>
+    <div class="nav-item" data-nav="reminders">
+      <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      <span>Reminders</span>
+    </div>
+    <div class="nav-item" data-nav="reports">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span>Reports</span>
+    </div>
+  </nav>
+
+  <!-- MODAL: Add Party -->
+  <div class="modal-overlay" id="addPartyModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">Add New Party</div>
+        <button class="modal-close" data-close="addPartyModal">✕</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Party Type</label>
+        <div style="display: flex; gap: 8px;">
+          <button class="filter-chip active" id="typeCustomerBtn" style="flex: 1; text-align: center;">Customer</button>
+          <button class="filter-chip" id="typeSupplierBtn" style="flex: 1; text-align: center;">Supplier</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Name *</label>
+        <input type="text" class="form-input" id="partyNameInput" placeholder="e.g. Ramesh Kumar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mobile Number</label>
+        <input type="tel" class="form-input" id="partyPhoneInput" placeholder="10-digit mobile number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address / Landmark</label>
+        <input type="text" class="form-input" id="partyAddressInput" placeholder="Area or shop address">
+      </div>
+      <button class="btn btn-primary" id="submitAddPartyBtn">Save Party</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Party Detail & Ledger -->
+  <div class="modal-overlay" id="partyDetailModal">
+    <div class="modal-sheet" style="max-height: 95vh; padding-bottom: 80px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="detailPartyName">Customer Name</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="detailPartyPhone">+91 0000000000</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-icon" id="detailDeletePartyBtn" style="background: var(--red-bg); color: var(--red);" title="Delete Customer / Supplier">🗑️</button>
+          <button class="modal-close" data-close="partyDetailModal">✕</button>
+        </div>
+      </div>
+
+      <div class="card" style="background: #F1F5F9; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);">Current Balance</div>
+            <div style="font-size: 22px; font-weight: 800;" id="detailPartyBalance">₹0</div>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <a href="#" class="btn-icon" id="detailCallBtn" style="background: var(--primary); text-decoration: none;" title="Call">📞</a>
+            <button class="btn-icon" id="detailWhatsAppBtn" style="background: #25D366;" title="WhatsApp Reminder">💬</button>
+          </div>
+        </div>
+      </div>
+
+      <h4 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Transaction Ledger</h4>
+      <div id="detailLedgerContainer"></div>
+
+      <div style="margin-top: 14px; margin-bottom: 70px; text-align: center;">
+        <button class="btn btn-secondary" id="detailDeletePartyActionBtn" style="color: var(--red); border: 1px solid var(--red-border); background: var(--red-bg); width: 100%; min-height: 46px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+          <span>🗑️</span>
+          <span id="detailDeletePartyActionText">Delete Customer & All History</span>
+        </button>
+      </div>
+
+      <!-- Bottom GAVE / GOT buttons -->
+      <div class="ledger-actions">
+        <button class="btn btn-gave" id="detailYouGaveBtn" style="flex: 1;">YOU GAVE ₹</button>
+        <button class="btn btn-got" id="detailYouGotBtn" style="flex: 1;">YOU GOT ₹</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Transaction (Gave / Got) -->
+  <div class="modal-overlay" id="addTxModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="txModalTitle">Record Transaction</div>
+        <button class="modal-close" data-close="addTxModal">✕</button>
+      </div>
+      <input type="hidden" id="txPartyId">
+      <input type="hidden" id="txType">
+
+      <div class="form-group">
+        <label class="form-label">Amount (₹) *</label>
+        <input type="number" step="0.01" class="form-input" id="txAmountInput" placeholder="0.00" style="font-size: 20px; font-weight: 700;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description / Item Details</label>
+        <input type="text" class="form-input" id="txDescInput" placeholder="e.g. 5 bags cement, invoice #102">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select class="form-input" id="txPaymentMethod">
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI / GPay / PhonePe</option>
+          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Cheque">Cheque</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="submitTxBtn">Save Entry</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Cash In / Out -->
+  <div class="modal-overlay" id="cashModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="cashModalTitle">Record Cash Entry</div>
+        <button class="modal-close" data-close="cashModal">✕</button>
+      </div>
+      <input type="hidden" id="cashEntryType" value="IN">
+      <div class="form-group">
+        <label class="form-label">Amount (₹) *</label>
+        <input type="number" step="0.01" class="form-input" id="cashAmountInput" placeholder="0.00" style="font-size: 20px; font-weight: 700;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Remarks / Note</label>
+        <input type="text" class="form-input" id="cashDescInput" placeholder="e.g. Counter cash sales, ATM withdrawal">
+      </div>
+      <button class="btn btn-primary" id="submitCashBtn">Save Cash Entry</button>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Expense / Income -->
+  <div class="modal-overlay" id="expenseIncomeModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title" id="expIncModalTitle">Add Expense</div>
+        <button class="modal-close" data-close="expenseIncomeModal">✕</button>
+      </div>
+      <input type="hidden" id="expIncType" value="EXPENSE">
+      <div class="form-group">
+        <label class="form-label">Amount (₹) *</label>
+        <input type="number" step="0.01" class="form-input" id="expIncAmountInput" placeholder="0.00" style="font-size: 20px; font-weight: 700;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-input" id="expIncCategory">
+          <option value="Rent">Shop Rent</option>
+          <option value="Salaries">Staff Salary</option>
+          <option value="Electricity">Electricity / Utility</option>
+          <option value="Stock / Goods">Stock & Inventory</option>
+          <option value="Transport">Delivery & Transport</option>
+          <option value="Sales">Direct Sales</option>
+          <option value="Commission">Commission / Service</option>
+          <option value="General">Other / General</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input type="text" class="form-input" id="expIncDescInput" placeholder="Details...">
+      </div>
+      <button class="btn btn-primary" id="submitExpIncBtn">Save Record</button>
+    </div>
+  </div>
+
+  <!-- MODAL: PWA Install (Supports iOS Safari & Android Chrome) -->
+  <div class="modal-overlay" id="pwaInstallModal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div class="modal-title">Install HisabPro App</div>
+        <button class="modal-close" data-close="pwaInstallModal">✕</button>
+      </div>
+
+      <!-- Shown on iOS Safari -->
+      <div id="iosInstallInstructions" style="display: none;">
+        <div class="ios-install-box">
+          <h4 style="color: var(--primary); margin-bottom: 8px;">Install HisabPro on iPhone</h4>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Add this app to your Home Screen for instant offline use without opening Safari.</p>
+          
+          <div class="ios-step">
+            <div class="ios-num">1</div>
+            <div>Tap the <strong>Share</strong> button at the bottom of Safari (<span style="font-size: 18px;">⎋</span> or square with arrow up).</div>
+          </div>
+          <div class="ios-step">
+            <div class="ios-num">2</div>
+            <div>Scroll down and select <strong>"Add to Home Screen"</strong> (<span style="font-size: 16px;">⊞</span>).</div>
+          </div>
+          <div class="ios-step">
+            <div class="ios-num">3</div>
+            <div>Tap <strong>"Add"</strong> in the top right corner.</div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted); text-align: center;">HisabPro icon will appear on your iPhone home screen!</p>
+      </div>
+
+      <!-- Shown on Android Chrome / Desktop -->
+      <div id="androidInstallInstructions" style="display: none;">
+        <div style="text-align: center; padding: 16px 0;">
+          <div style="font-size: 40px; margin-bottom: 8px;">📲</div>
+          <h4 style="margin-bottom: 8px;">Install on your device</h4>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Use HisabPro in full-screen standalone mode with 100% offline support.</p>
+          <button class="btn btn-primary" id="nativePwaInstallBtn">Install Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="toast-notification">
+    <span>✅</span>
+    <span id="toastMessage">Deleted successfully</span>
+  </div>
+
+  <!-- MODAL: Confirmation Dialog -->
+  <div class="modal-overlay" id="confirmDeleteModal">
+    <div class="modal-sheet" style="max-width: 400px; text-align: center; border-radius: 20px;">
+      <div style="font-size: 36px; margin-bottom: 8px;">⚠️</div>
+      <h3 class="modal-title" id="confirmDeleteTitle" style="margin-bottom: 8px;">Delete Confirmation</h3>
+      <p id="confirmDeleteMessage" style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">Are you sure you want to proceed?</p>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-secondary" id="cancelDeleteBtn" style="flex: 1;">Cancel</button>
+        <button class="btn btn-gave" id="executeDeleteBtn" style="flex: 1;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PIN Lock Verification -->
+  <div class="modal-overlay" id="pinLockModal">
+    <div class="modal-sheet" style="max-width: 380px; text-align: center; border-radius: 24px; padding: 24px 20px;">
+      <div style="font-size: 36px; margin-bottom: 8px;">🔒</div>
+      <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 4px;">HisabPro Protected</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Enter your 4-digit PIN to access your ledger</p>
+      
+      <div class="pin-dots">
+        <div class="pin-dot" id="pindot-0"></div>
+        <div class="pin-dot" id="pindot-1"></div>
+        <div class="pin-dot" id="pindot-2"></div>
+        <div class="pin-dot" id="pindot-3"></div>
+      </div>
+      <div id="pinErrorText" style="color: var(--red); font-size: 13px; font-weight: 600; min-height: 20px;"></div>
+
+      <div class="pin-pad-grid">
+        <button class="pin-key" data-digit="1">1</button>
+        <button class="pin-key" data-digit="2">2</button>
+        <button class="pin-key" data-digit="3">3</button>
+        <button class="pin-key" data-digit="4">4</button>
+        <button class="pin-key" data-digit="5">5</button>
+        <button class="pin-key" data-digit="6">6</button>
+        <button class="pin-key" data-digit="7">7</button>
+        <button class="pin-key" data-digit="8">8</button>
+        <button class="pin-key" data-digit="9">9</button>
+        <button class="pin-key" id="pinBypassBtn" style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Reset</button>
+        <button class="pin-key" data-digit="0">0</button>
+        <button class="pin-key" id="pinBackspaceBtn" style="font-size: 18px;">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/app.js"></script>
+</body>
+</html>

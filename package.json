@@ -1,0 +1,19 @@
+{
+  "name": "hisabpro-pwa",
+  "version": "1.0.0",
+  "description": "Simple business. Clear hisab. Progressive Web App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "hisabpro",
+    "khata",
+    "ledger",
+    "pwa",
+    "offline"
+  ],
+  "author": "HisabPro",
+  "license": "ISC"
+}

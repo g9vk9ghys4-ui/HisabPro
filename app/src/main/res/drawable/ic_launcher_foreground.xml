@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Ledger Book base in white and cyan accents -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,28 L72,28 C75.31,28 78,30.69 78,34 L78,74 C78,77.31 75.31,80 72,80 L30,80 C26.69,80 24,77.31 24,74 L24,34 C24,30.69 26.69,28 30,28 Z" />
+    <!-- Spine binding -->
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M24,34 L32,34 L32,74 L24,74 Z" />
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M27,38 A2,2 0 1 0 27,42 A2,2 0 1 0 27,38 Z M27,52 A2,2 0 1 0 27,56 A2,2 0 1 0 27,52 Z M27,66 A2,2 0 1 0 27,70 A2,2 0 1 0 27,66 Z" />
+    <!-- Rupee symbol in Hisab Blue -->
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M43,38 L65,38 L65,42 L43,42 Z M43,45 L62,45 L62,48 L43,48 Z" />
+    <path
+        android:fillColor="#1E40AF"
+        android:pathData="M43,38 L49,38 C56,38 56,52 49,52 L43,52 Z M49,42 C51.5,42 51.5,48 49,48 Z" />
+    <path
+        android:strokeColor="#1E40AF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:pathData="M47,52 L62,70" />
+    <!-- Green badge for credit/balance -->
+    <path
+        android:fillColor="#16A34A"
+        android:pathData="M64,60 C64,55.58 67.58,52 72,52 C76.42,52 80,55.58 80,60 C80,64.42 76.42,68 72,68 C67.58,68 64,64.42 64,60 Z" />
+    <!-- White checkmark in green badge -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M68,60 L71,63 L76,57" />
+</vector>
